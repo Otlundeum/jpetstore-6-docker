@@ -14,7 +14,8 @@
 #    limitations under the License.
 #
 # Étape 1 : utiliser Maven pour compiler le projet
-FROM maven:3.8.7-openjdk-17 AS build
+FROM maven:3.8.7-eclipse-temurin-17 AS build
+
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
