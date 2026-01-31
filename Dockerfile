@@ -1,5 +1,5 @@
 #
-#    Copyright 2010-2023 the original author or authors.
+#    Copyright 2010-2026 the original author or authors.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -13,18 +13,25 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #
-# Étape 1 : utiliser Maven pour compiler le projet
+
 FROM maven:3.8.7-eclipse-temurin-17 AS build
-
 WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
 
-# Étape 2 : utiliser une image Java légère pour exécuter l'application
-FROM openjdk:17-jdk-slim
+# Étape cache : télécharger les dépendances
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Copier le reste du projet
+COPY . .
+RUN mvn package -DskipTests
+
+FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
 CMD ["java", "-jar", "app.jar"]
+
+
 
 
 
