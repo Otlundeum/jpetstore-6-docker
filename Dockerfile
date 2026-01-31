@@ -13,9 +13,19 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #
+# Étape 1 : utiliser Maven pour compiler le projet
+FROM maven:3.8.7-openjdk-17 AS build
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-FROM openjdk:17.0.2
-COPY . /usr/src/myapp
-WORKDIR /usr/src/myapp
-RUN ./mvnw clean package
-CMD ./mvnw cargo:run -P tomcat90
+# Étape 2 : utiliser une image Java légère pour exécuter l'application
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+CMD ["java", "-jar", "app.jar"]
+
+
+
+
+
