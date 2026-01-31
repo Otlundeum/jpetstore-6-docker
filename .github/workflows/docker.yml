@@ -11,26 +11,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
 
-      - name: Build with Maven
-        run: ./mvnw clean package
+    - name: Make mvnw executable
+      run: chmod +x mvnw
 
-      - name: Run tests
-        run: ./mvnw test
+    - name: Build with Maven
+      run: ./mvnw clean package
 
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/jpetstore-app:${{ github.sha }} .
+    - name: Run tests
+      run: ./mvnw test
 
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - name: Build Docker image
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/jpetstore-app:latest .
 
-      - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/jpetstore-app:${{ github.sha }}
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Push Docker image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/jpetstore-app:latest
+
+
 
