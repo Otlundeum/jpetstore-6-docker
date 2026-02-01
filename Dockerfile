@@ -25,11 +25,15 @@ RUN mvn dependency:go-offline -B
 COPY . .
 RUN mvn package -DskipTests
 
-FROM eclipse-temurin:17-jdk-jammy
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+# Le projet est packagé en WAR (voir pom.xml). Déployer le WAR dans Tomcat.
+FROM tomcat:9.0-jdk17
+WORKDIR /usr/local/tomcat/webapps
+
+# Copier le WAR généré et le déployer (conserver le nom pour le contexte /jpetstore)
+COPY --from=build /app/target/jpetstore.war jpetstore.war
+
 EXPOSE 8080
-CMD ["java", "-jar", "app.jar"]
+# Le container Tomcat officiel démarre Tomcat via son CMD par défaut.
 
 
 
