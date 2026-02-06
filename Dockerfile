@@ -25,6 +25,7 @@ FROM tomcat:9.0-jdk17-openjdk-slim
 WORKDIR /usr/local/tomcat/webapps
 COPY --from=build /app/target/jpetstore.war ROOT.war
 EXPOSE 8080
+ENV CATALINA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75 -Djdk.jndi.object.factoryBuilder=com.sun.jndi.cosnaming.CNCtxFactory"
 CMD ["catalina.sh", "run"]
 
 
