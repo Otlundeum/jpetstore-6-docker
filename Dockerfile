@@ -21,11 +21,10 @@ COPY . .
 RUN mvn package -DskipTests
 
 # Étape 2 : Runtime Tomcat
-FROM tomcat:9.0-jdk17-openjdk-slim
+FROM tomcat:9.0-jdk11
 WORKDIR /usr/local/tomcat/webapps
 COPY --from=build /app/target/jpetstore.war ROOT.war
 EXPOSE 8080
-ENV CATALINA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75 -Djdk.jndi.object.factoryBuilder=com.sun.jndi.cosnaming.CNCtxFactory"
 CMD ["catalina.sh", "run"]
 
 
