@@ -14,26 +14,19 @@
 #    limitations under the License.
 #
 
-FROM maven:3.8.7-eclipse-temurin-17 AS build
+# Étape 1 : Build avec Maven
+FROM maven:3.9.11-eclipse-temurin-17 AS build
 WORKDIR /app
-
-# Étape cache : télécharger les dépendances
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-
-# Copier le reste du projet
 COPY . .
 RUN mvn package -DskipTests
 
-# Le projet est packagé en WAR (voir pom.xml). Déployer le WAR dans Tomcat.
-FROM tomcat:9.0-jdk17
+# Étape 2 : Runtime Tomcat
+FROM tomcat:9.0-jdk17-openjdk-slim
 WORKDIR /usr/local/tomcat/webapps
-
-# Copier le WAR généré et le déployer (conserver le nom pour le contexte /jpetstore)
-COPY --from=build /app/target/jpetstore.war jpetstore.war
-
+COPY --from=build /app/target/jpetstore.war ROOT.war
 EXPOSE 8080
-# Le container Tomcat officiel démarre Tomcat via son CMD par défaut.
+CMD ["catalina.sh", "run"]
+
 
 
 
