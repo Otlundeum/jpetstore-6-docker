@@ -19,7 +19,7 @@ jobs:
           distribution: 'temurin'
 
       - name: SonarQube Scan
-        run: mvn sonar:sonar \
-          -Dsonar.projectKey=jpetstore \
+        run: mvn verify sonar:sonar -Dsonar.projectKey=jpetstore \
           -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
